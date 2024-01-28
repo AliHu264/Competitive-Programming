@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <bits/stdc++.h>
+#include <climits>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <functional>
+
+using namespace std;
+#define mp make_pair
+#define ff first
+#define ss second
+#define pb push_back
+#define eb emplace_back
+#define endl '\n'
+typedef long long ll;
+typedef unsigned long long ull;
+const int MAXN = 100000; // TODO change this for each problem
+const ll MOD = 1e9 + 7;
+const ll BASE = 131;
+const int INF = 0x3f3f3f3f;
+
+ll gcd(ll a, ll b) { return b == 0 ? a : gcd(b, a % b); }
+
+ll lcm(ll a, ll b) { return a * b / gcd(a, b); }
+
+string operator*(const string &s, int n) {
+    stringstream out;
+    while (n > 0) {
+        n--;
+        out << s;
+    }
+    return out.str();
+}
+
+int main() {
+    cin.tie(0);
+    cout.tie(0);
+    ios_base::sync_with_stdio(0);
+    string s;
+    cin >> s;
+
+    int len = s.size();
+
+    int acnt = 0, bcnt = 0, ccnt = 0;
+    for (auto c:s) {
+        if (c == 'A') acnt++;
+        else if (c == 'B')bcnt++;
+        else if (c == 'C')ccnt++;
+    }
+    s += s;
+    s = '\0' + s;
+    int apsa[s.size()];
+    int bpsa[s.size()];
+    int cpsa[s.size()];
+    for (int i = 1; i < s.size(); i++) {
+        apsa[i] = apsa[i - 1] + (s[i] == 'A');
+        bpsa[i] = bpsa[i - 1] + (s[i] == 'B');
+        cpsa[i] = cpsa[i - 1] + (s[i] == 'C');
+    }
+
+    int ans = INT_MAX;
+    for (int i = 0; i < len; i++) {
+        {
+            // ABC?
+            int cur = acnt - (apsa[i + acnt] - apsa[i]);
+            int binA = bpsa[i + acnt] - bpsa[i];
+            cur += cpsa[i + acnt + bcnt] - cpsa[i+acnt];
+            cur += max(0, -binA + (apsa[i + acnt + bcnt] - apsa[i + acnt]));
+            ans = min(cur, ans);
+        }
+
+        {
+            // ACB?
+            int cur = acnt - (apsa[i + acnt] - apsa[i]);
+            int cinA = cpsa[i + acnt] - cpsa[i];
+            cur += bpsa[i + acnt + ccnt] - bpsa[i+acnt];
+            cur += max(0, -cinA + (apsa[i + acnt + ccnt] - apsa[i + acnt]));
+            ans = min(cur, ans);
+        }
+    }
+    cout << ans << endl;
+}
